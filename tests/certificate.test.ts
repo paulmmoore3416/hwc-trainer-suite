@@ -1,5 +1,5 @@
-import { describe, expect, it } from 'vitest';
-import { buildCertificateData, certFileName, DEFAULT_CERT_SETTINGS } from '../src/lib/certificate';
+import { describe, expect, it, vi } from 'vitest';
+import { buildCertificateData, certFileName, DEFAULT_CERT_SETTINGS, LAYOUTS, shareLinks, THEMES, THEME_GROUPS } from '../src/lib/certificate';
 import { addMonths, certStatus, safeSearch, studentFullName } from '../src/lib/format';
 import { toCsv } from '../src/lib/csv';
 
@@ -12,6 +12,12 @@ describe('buildCertificateData', () => {
     expect(d.expirationDate).toBe('2027-11-17');
     expect(d.programVerbal && d.programPhysical).toBe(true);
     expect(d.theme).toBe('navy');
+    expect(d.layout).toBe('classic');
+  });
+
+  it('falls back to the default theme for unknown theme ids', () => {
+    expect(buildCertificateData({ studentName: 'A', theme: 'not-a-theme' }).theme).toBe('navy');
+    expect(buildCertificateData({ studentName: 'A', theme: 'royal', layout: 'heritage' })).toMatchObject({ theme: 'royal', layout: 'heritage' });
   });
 
   it('respects custom expiration months and explicit expiration', () => {
@@ -67,5 +73,41 @@ describe('csv', () => {
   it('escapes quotes and neutralises formula injection', () => {
     const csv = toCsv([{ a: '=1+1', b: 'say "hi"', c: null }]);
     expect(csv).toBe(`a,b,c\r\n'=1+1,"say ""hi""",`);
+  });
+});
+
+describe('certificate catalogue', () => {
+  it('offers 3 certificate types and 27 colour & style themes', () => {
+    expect(LAYOUTS.map((l) => l.id)).toEqual(['classic', 'modern', 'heritage']);
+    expect(Object.keys(THEMES)).toHaveLength(27);
+    for (const [id, t] of Object.entries(THEMES)) {
+      expect(id).toMatch(/^[a-z0-9_-]{2,30}$/); // matches the DB check constraint
+      expect(THEME_GROUPS).toContain(t.group);
+      for (const c of [t.primary, t.secondary, t.accent, t.paper, t.ink]) expect(c).toMatch(/^#[0-9a-f]{6}$/);
+    }
+  });
+});
+
+describe('badge sharing', () => {
+  it('builds a pre-filled LinkedIn add-certification link', () => {
+    vi.stubGlobal('window', { location: { origin: 'https://example.org', pathname: '/hwc-trainer-suite/' } });
+    const l = shareLinks({
+      code: '0123456789abcdef',
+      certNumber: 'HWC-AVBH-2026-001001',
+      facilityName: 'Arch Vista Behavioral Health',
+      programVerbal: true,
+      programPhysical: false,
+      issueDate: '2026-11-17',
+      expirationDate: '2027-11-17',
+    });
+    const u = new URL(l.linkedinAdd);
+    expect(u.hostname).toBe('www.linkedin.com');
+    expect(u.searchParams.get('startTask')).toBe('CERTIFICATION_NAME');
+    expect(u.searchParams.get('name')).toBe('Handle With Care Certification — Verbal Program');
+    expect(u.searchParams.get('issueMonth')).toBe('11');
+    expect(u.searchParams.get('expirationYear')).toBe('2027');
+    expect(u.searchParams.get('certId')).toBe('HWC-AVBH-2026-001001');
+    expect(u.searchParams.get('certUrl')).toContain('#/badge/0123456789abcdef');
+    expect(l.facebook).toContain(encodeURIComponent('#/badge/0123456789abcdef'));
   });
 });

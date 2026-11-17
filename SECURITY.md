@@ -16,7 +16,7 @@
 | Deactivation | Deactivated users fail every RLS check immediately, even with a still-valid session |
 | Invitations | Created only by the Edge Function after verifying the caller is active, the role is ≤ their own, and the facilities are their own. One-time links, 24-hour validity |
 | Logs | `audit_log`, `app_errors` and `auth_events` are readable only by super admins. Inserts go through rate-limited `SECURITY DEFINER` functions |
-| Public surface | `verify_certificate(code)` returns only what is printed on the certificate, for a 16-character unguessable code |
+| Public surface | `verify_certificate(code)` powers the verify and digital-badge pages. It returns only what is printed on the certificate (plus its theme and layout, for drawing the badge), for a 16-character unguessable code. Revoked credentials disable sharing |
 | Web | Strict CSP (`script-src 'self'`), no third-party scripts or fonts, referrer policy, HTTPS via GitHub Pages |
 | Exports | CSV cells are protected against spreadsheet formula injection |
 

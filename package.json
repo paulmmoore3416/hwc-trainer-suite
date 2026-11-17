@@ -1,7 +1,7 @@
 {
   "name": "hwc-trainer-suite",
   "private": true,
-  "version": "1.0.0",
+  "version": "1.1.0",
   "type": "module",
   "description": "Handle With Care Trainer Suite \u2014 invite-only training CRM, certificates, incidents and reporting for HWC instructors.",
   "license": "MIT",

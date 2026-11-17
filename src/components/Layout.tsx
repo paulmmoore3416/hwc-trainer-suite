@@ -20,6 +20,7 @@ import { useAuth } from '../lib/auth';
 import { APP_SHORT, APP_VERSION } from '../lib/config';
 import { titleCase } from '../lib/format';
 import { cx } from './ui';
+import { ThemeToggle } from './ThemeToggle';
 
 interface NavItem {
   to: string;
@@ -46,7 +47,7 @@ export function Layout() {
   ];
 
   const sidebar = (
-    <div className="flex h-full flex-col bg-brand-900 text-slate-200">
+    <div className="no-invert flex h-full flex-col bg-brand-900 text-slate-200">
       <div className="flex items-center gap-3 px-5 py-5">
         <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-teal-brand to-brand-500 shadow-lg">
           <ClipboardList className="h-5 w-5 text-white" />
@@ -132,6 +133,7 @@ export function Layout() {
             </select>
           </div>
           <div className="ml-auto flex items-center gap-2 text-xs text-slate-500">
+            <ThemeToggle />
             {isAdmin && !isSuper && <span className="rounded-full bg-teal-50 px-2 py-0.5 font-medium text-teal-800">Facility Admin</span>}
             {isSuper && <span className="rounded-full bg-amber-50 px-2 py-0.5 font-medium text-amber-800">Super Admin</span>}
           </div>

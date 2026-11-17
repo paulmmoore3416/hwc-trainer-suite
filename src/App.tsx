@@ -7,6 +7,7 @@ import { Spinner, ToastProvider } from './components/ui';
 import Login from './pages/Login';
 import Accept from './pages/Accept';
 import Verify from './pages/Verify';
+import BadgePage from './pages/BadgePage';
 
 const Dashboard = lazy(() => import('./pages/Dashboard'));
 const Students = lazy(() => import('./pages/Students'));
@@ -63,6 +64,7 @@ export default function App() {
                 <Route path="/accept" element={<Accept />} />
                 <Route path="/set-password" element={<Accept />} />
                 <Route path="/verify/:code" element={<Verify />} />
+                <Route path="/badge/:code" element={<BadgePage />} />
                 {import.meta.env.DEV && <Route path="/__dev/certificate" element={<DevPreview />} />}
                 <Route
                   element={

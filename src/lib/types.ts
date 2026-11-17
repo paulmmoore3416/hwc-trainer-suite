@@ -54,7 +54,9 @@ export interface Personnel {
   title: string;
 }
 
-export type CertTheme = 'navy' | 'archvista' | 'crimson' | 'forest';
+/** Theme id from the THEMES catalogue in lib/certificate.ts (27 colour & style options). */
+export type CertTheme = string;
+export type CertLayout = 'classic' | 'modern' | 'heritage';
 
 export interface Certificate {
   id: string;
@@ -76,6 +78,7 @@ export interface Certificate {
   instructor_cert_number: string | null;
   personnel: Personnel[];
   theme: CertTheme;
+  layout: CertLayout;
   status: 'active' | 'revoked';
   revoked_reason: string | null;
   created_by: string | null;
@@ -176,6 +179,7 @@ export interface LookupValue {
 export interface CertificateSettings {
   expiration_months: number;
   default_theme: CertTheme;
+  default_layout: CertLayout;
   program_label: string;
   signer_title: string;
   footer_text: string;

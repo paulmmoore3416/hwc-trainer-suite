@@ -6,6 +6,7 @@ import { useAuth } from '../lib/auth';
 import { errMessage, logAuth, logError } from '../lib/errors';
 import { appBaseUrl, APP_NAME } from '../lib/config';
 import { Button, ErrorNote, Field, Input } from '../components/ui';
+import { ThemeToggle } from '../components/ThemeToggle';
 
 type Mode = 'signin' | 'forgot' | 'owner';
 
@@ -68,7 +69,7 @@ export default function Login() {
   return (
     <div className="flex min-h-full flex-col lg:flex-row">
       {/* Brand panel */}
-      <div className="relative overflow-hidden bg-gradient-to-br from-brand-900 via-brand-800 to-[#16465a] px-8 py-10 text-white lg:flex lg:w-[52%] lg:flex-col lg:justify-between lg:px-14 lg:py-14">
+      <div className="no-invert relative overflow-hidden bg-gradient-to-br from-brand-900 via-brand-800 to-[#16465a] px-8 py-10 text-white lg:flex lg:w-[52%] lg:flex-col lg:justify-between lg:px-14 lg:py-14">
         <svg className="pointer-events-none absolute -top-10 -left-10 opacity-20" width="420" height="420" viewBox="0 0 420 420" aria-hidden>
           <polygon points="0,0 260,0 0,260" fill="#1f8a8a" />
           <polygon points="290,0 340,0 0,340 0,290" fill="#8ab85a" />
@@ -103,7 +104,8 @@ export default function Login() {
       </div>
 
       {/* Form */}
-      <div className="flex flex-1 items-center justify-center bg-white px-6 py-12">
+      <div className="relative flex flex-1 items-center justify-center bg-white px-6 py-12">
+        <ThemeToggle className="absolute top-4 right-4" />
         <div className="w-full max-w-sm">
           <h2 className="text-2xl font-bold text-slate-900">
             {mode === 'signin' ? 'Instructor sign in' : mode === 'forgot' ? 'Reset your password' : 'Owner account setup'}

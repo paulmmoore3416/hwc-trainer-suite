@@ -6,7 +6,7 @@ export const SUPABASE_KEY: string =
   import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || 'sb_publishable_kkkATJwEOiTspItJQbWTBw_H6L4ewWY';
 export const APP_NAME = 'Handle With Care Trainer Suite';
 export const APP_SHORT = 'HWC Trainer Suite';
-export const APP_VERSION = '1.0.0';
+export const APP_VERSION = '1.1.0';
 export const PAGE_SIZE = 25;
 
 /** Base URL of the app without the hash route, e.g. https://host/hwc-trainer-suite/ */

@@ -1,29 +1,81 @@
-import type { CertTheme, CertificateSettings, Personnel } from './types';
+import type { CertLayout, CertTheme, CertificateSettings, Personnel } from './types';
 import { addMonths, today } from './format';
 import { appBaseUrl } from './config';
 
 export const CERT_WIDTH = 1100; // 11in @ 100px/in
 export const CERT_HEIGHT = 850; // 8.5in
 
+export type Pattern = 'weave' | 'dots' | 'linen' | 'grid' | 'waves' | 'diamond' | 'none';
+
 export interface ThemeSpec {
   label: string;
+  group: 'Signature' | 'Jewel' | 'Earth' | 'Modern' | 'Classic';
   primary: string; // ribbons, title, banner
-  secondary: string; // second ribbon band, subtitle
+  secondary: string; // second band, subtitle
   accent: string; // seal, fine rules
   paper: string;
   ink: string;
+  pattern: Pattern; // background texture ("style")
 }
 
-export const THEMES: Record<CertTheme, ThemeSpec> = {
-  navy: { label: 'Navy & Teal', primary: '#1f2a44', secondary: '#1f8a8a', accent: '#c29a2c', paper: '#fffdf7', ink: '#1d1d22' },
-  archvista: { label: 'Arch Vista Blue & Green', primary: '#3f6fa6', secondary: '#8ab85a', accent: '#6f7a86', paper: '#fcfdfb', ink: '#1f2933' },
-  crimson: { label: 'Crimson & Charcoal', primary: '#2c2c31', secondary: '#b3263a', accent: '#c29a2c', paper: '#fffcf8', ink: '#1d1d22' },
-  forest: { label: 'Forest & Gold', primary: '#1e3d2f', secondary: '#5f8f45', accent: '#c29a2c', paper: '#fdfcf6', ink: '#1b241f' },
+const t = (label: string, group: ThemeSpec['group'], primary: string, secondary: string, accent: string, pattern: Pattern, paper = '#fffdf7', ink = '#1d1d22'): ThemeSpec => ({
+  label,
+  group,
+  primary,
+  secondary,
+  accent,
+  paper,
+  ink,
+  pattern,
+});
+
+/** 27 colour & style options. Keys are stored on each certificate, so never rename an existing key. */
+export const THEMES: Record<string, ThemeSpec> = {
+  navy: t('Navy & Teal', 'Signature', '#1f2a44', '#1f8a8a', '#c29a2c', 'weave'),
+  archvista: t('Arch Vista Blue & Green', 'Signature', '#3f6fa6', '#8ab85a', '#6f7a86', 'weave', '#fcfdfb', '#1f2933'),
+  crimson: t('Crimson & Charcoal', 'Classic', '#2c2c31', '#b3263a', '#c29a2c', 'weave', '#fffcf8'),
+  forest: t('Forest & Gold', 'Earth', '#1e3d2f', '#5f8f45', '#c29a2c', 'weave', '#fdfcf6', '#1b241f'),
+  royal: t('Royal Purple & Gold', 'Jewel', '#3b1f5c', '#7a4fb0', '#c29a2c', 'diamond', '#fdfbff'),
+  midnight: t('Midnight & Silver', 'Modern', '#0f172a', '#475569', '#9aa3ae', 'grid', '#fbfcfd', '#0f172a'),
+  ocean: t('Ocean & Coral', 'Modern', '#0b4f6c', '#1b98c4', '#f2735a', 'waves', '#fbfdfe'),
+  sunset: t('Sunset Plum & Orange', 'Modern', '#5b2a4a', '#e2703a', '#e8a838', 'waves', '#fffaf5'),
+  emerald: t('Emerald & Onyx', 'Jewel', '#0b3d2e', '#12916b', '#c29a2c', 'diamond', '#fbfefc'),
+  burgundy: t('Burgundy & Rose Gold', 'Classic', '#5a1426', '#a85b67', '#c9967a', 'linen', '#fffaf8'),
+  copper: t('Slate & Copper', 'Earth', '#2f3e46', '#52796f', '#b87333', 'linen', '#fbfbf8'),
+  sky: t('Sky & Sand', 'Modern', '#1d4e89', '#4a97c9', '#c9a46a', 'dots', '#fdfcf8'),
+  teal: t('Deep Teal & Amber', 'Signature', '#0d4d4d', '#2a9d8f', '#e09a2c', 'weave', '#fbfdfc'),
+  charcoal: t('Charcoal & Lime', 'Modern', '#262626', '#6a9c16', '#9a9a9a', 'grid', '#fcfcfa'),
+  cobalt: t('Cobalt & Tangerine', 'Modern', '#1c3f94', '#e67e22', '#c29a2c', 'dots', '#fdfcfa'),
+  plum: t('Plum & Sage', 'Earth', '#4a2545', '#7f9a6f', '#c2a77f', 'linen', '#fdfbf7'),
+  ruby: t('Ruby & Black', 'Jewel', '#1f1f1f', '#9b111e', '#c29a2c', 'diamond', '#fffcfa'),
+  sapphire: t('Sapphire & Platinum', 'Jewel', '#0f3b7a', '#2f6fd0', '#a9b0ba', 'diamond', '#fbfcff'),
+  olive: t('Olive & Brass', 'Earth', '#3d4a1f', '#7d8b3a', '#b09a3e', 'linen', '#fdfcf5'),
+  mocha: t('Mocha & Cream', 'Earth', '#4b3621', '#8b5e3c', '#c9a46a', 'linen', '#fdf8ef', '#2b2118'),
+  lavender: t('Lavender & Graphite', 'Modern', '#3c3a52', '#8e7cc3', '#b3a3d9', 'dots', '#fdfcff'),
+  indigo: t('Indigo & Turquoise', 'Jewel', '#2e1a6b', '#16a3a0', '#e8b73f', 'diamond', '#fcfcff'),
+  maroon: t('Maroon & Gold', 'Classic', '#5c0f1b', '#8f2d3a', '#c29a2c', 'weave', '#fffbf5'),
+  steel: t('Steel Blue & Orange', 'Modern', '#274060', '#5b84b1', '#f0a020', 'grid', '#fbfcfd'),
+  pine: t('Pine & Birch', 'Earth', '#1f3b2c', '#4f7a5a', '#bfae8c', 'waves', '#fcfbf6'),
+  harbor: t('Harbor Gray & Signal Red', 'Classic', '#2b3a42', '#566f7c', '#bf3b3b', 'grid', '#fbfbfb'),
+  mono: t('Classic Black & White', 'Classic', '#111111', '#4b4b4b', '#8c8c8c', 'none', '#ffffff', '#111111'),
 };
+
+export const THEME_GROUPS: ThemeSpec['group'][] = ['Signature', 'Classic', 'Jewel', 'Earth', 'Modern'];
+
+export function themeOf(id: string | null | undefined): ThemeSpec {
+  return (id && THEMES[id]) || THEMES.navy;
+}
+
+export const LAYOUTS: { id: CertLayout; label: string; description: string }[] = [
+  { id: 'classic', label: 'Classic Ribbon', description: 'Angled corner ribbons, banner and rosette seal' },
+  { id: 'modern', label: 'Modern Panel', description: 'Bold side panel, left-aligned and clean' },
+  { id: 'heritage', label: 'Heritage Formal', description: 'Ornate double frame, corner flourishes, centered seal' },
+];
 
 export const DEFAULT_CERT_SETTINGS: CertificateSettings = {
   expiration_months: 12,
   default_theme: 'navy',
+  default_layout: 'classic',
   program_label: 'Basic Training Program',
   signer_title: 'Certified HWC Instructor',
   footer_text: 'Handle With Care Behavior Management System',
@@ -47,6 +99,7 @@ export interface CertificateData {
   certNumber: string | null;
   verifyCode: string | null;
   theme: CertTheme;
+  layout: CertLayout;
   footerText: string;
   showQr: boolean;
 }
@@ -67,6 +120,7 @@ export interface BuildInput {
   certNumber?: string | null;
   verifyCode?: string | null;
   theme?: CertTheme | null;
+  layout?: CertLayout | null;
   settings?: Partial<CertificateSettings> | null;
 }
 
@@ -94,7 +148,8 @@ export function buildCertificateData(input: BuildInput): CertificateData {
       .slice(0, 4),
     certNumber: input.certNumber ?? null,
     verifyCode: input.verifyCode ?? null,
-    theme: input.theme ?? s.default_theme,
+    theme: input.theme && THEMES[input.theme] ? input.theme : s.default_theme,
+    layout: input.layout ?? s.default_layout,
     footerText: s.footer_text,
     showQr: s.show_qr,
   };
@@ -182,4 +237,69 @@ export async function typedSignatureDataUrl(name: string, color = '#14213d'): Pr
   ctx.textBaseline = 'middle';
   ctx.fillText(name.trim(), 20, 105, 860);
   return trimCanvasToDataUrl(canvas, 6);
+}
+
+/** Public credential (badge) page for a certificate. */
+export function badgeUrl(code: string): string {
+  return `${appBaseUrl()}#/badge/${code}`;
+}
+
+export function programText(verbal: boolean, physical: boolean): string {
+  return verbal && physical ? 'Verbal & Physical Programs' : verbal ? 'Verbal Program' : physical ? 'Physical Program' : '';
+}
+
+export interface ShareInput {
+  code: string;
+  certNumber: string;
+  facilityName: string;
+  programVerbal: boolean;
+  programPhysical: boolean;
+  issueDate: string;
+  expirationDate: string;
+}
+
+/** LinkedIn "Add licence or certification" deep link and social share links. */
+export function shareLinks(c: ShareInput) {
+  const url = badgeUrl(c.code);
+  const [iy, im] = c.issueDate.split('-').map(Number);
+  const [ey, em] = c.expirationDate.split('-').map(Number);
+  const name = `Handle With Care Certification — ${programText(c.programVerbal, c.programPhysical)}`;
+  const li = new URLSearchParams({
+    startTask: 'CERTIFICATION_NAME',
+    name,
+    organizationName: c.facilityName || 'Handle With Care Behavior Management System',
+    issueYear: String(iy),
+    issueMonth: String(im),
+    expirationYear: String(ey),
+    expirationMonth: String(em),
+    certUrl: url,
+    certId: c.certNumber,
+  });
+  const text = `I earned my ${name}${c.facilityName ? ` at ${c.facilityName}` : ''}. Verify it here:`;
+  return {
+    url,
+    name,
+    linkedinAdd: `https://www.linkedin.com/profile/add?${li.toString()}`,
+    linkedinShare: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`,
+    facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`,
+    x: `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`,
+    email: (to = '') =>
+      `mailto:${encodeURIComponent(to)}?subject=${encodeURIComponent('Your Handle With Care digital badge')}&body=${encodeURIComponent(
+        `Congratulations on completing your Handle With Care training!\n\nYour digital badge and verified credential:\n${url}\n\nFrom that page you can download your badge image, add the certification to your LinkedIn profile, or share it on social media.`,
+      )}`,
+  };
+}
+
+/** Render a badge DOM node (square) to a transparent PNG and download it. */
+export async function downloadBadgePng(node: HTMLElement, filename: string, size = 1200) {
+  const { toPng, getFontEmbedCSS } = await import('html-to-image');
+  if (document.fonts?.ready) await document.fonts.ready;
+  const w = node.offsetWidth || 600;
+  const png = await toPng(node, { pixelRatio: size / w, cacheBust: false, fontEmbedCSS: await getFontEmbedCSS(node), style: { transform: 'none', margin: '0' } });
+  const a = document.createElement('a');
+  a.href = png;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
 }

@@ -178,3 +178,10 @@ Landscape US Letter. It is similar in spirit to the HWC student certificate but 
 
 Exact component structure, chart styling, migration file split, test layout (unit tests for certificate field
 mapping, metric helpers and RLS policy SQL checks).
+
+## Addendum: v1.1 (2026-11-17)
+
+- **Digital badges:** each certificate has a badge (shape follows the certificate type, colors follow the theme) and a public credential page `#/badge/<verify_code>`. It offers a LinkedIn *Add licence or certification* deep link (pre-filled name, issuer, issue and expiry month/year, credential ID and URL), LinkedIn/Facebook/X share links, PNG download, and an email-to-student draft. Static Open Graph tags plus `og-badge.png` give shared links a rich preview. (A hash-routed static site can't serve per-certificate OG tags.)
+- **Certificate types:** `certificates.layout` is one of `classic`, `modern` or `heritage`, with a default in `app_settings.certificate.default_layout`.
+- **Themes:** 27 color & style themes, each a palette plus a paper texture. The theme id format is enforced by a DB check (`^[a-z0-9_-]{2,30}$`). Unknown ids fall back to `navy`.
+- **Dark mode:** Light, Dark or System, stored in localStorage and applied before first paint. The slate scale and status tints are remapped under `html.dark`. Brand panels opt out with `.no-invert`, and signature pads stay on white `.paper`. Charts use the validated dark-step palette.

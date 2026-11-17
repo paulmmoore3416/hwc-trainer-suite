@@ -54,7 +54,7 @@ export default function Dashboard() {
 
   return (
     <>
-      <div className="mb-6 overflow-hidden rounded-2xl bg-gradient-to-r from-brand-900 via-brand-800 to-[#16465a] p-6 text-white shadow-lg sm:p-8">
+      <div className="no-invert mb-6 overflow-hidden rounded-2xl bg-gradient-to-r from-brand-900 via-brand-800 to-[#16465a] p-6 text-white shadow-lg sm:p-8">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
             <div className="text-sm text-teal-200">{new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}</div>

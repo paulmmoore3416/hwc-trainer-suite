@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
-import { Award, Ban, Copy, Download, Printer, RotateCcw, Save, Trash2 } from 'lucide-react';
+import { Award, Ban, BadgeCheck, Copy, Download, Printer, RotateCcw, Save, Trash2 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../lib/auth';
 import { errMessage, must } from '../lib/errors';
@@ -10,6 +10,7 @@ import { certStatus, fmtDateTime, studentFullName } from '../lib/format';
 import { buildCertificateData, certFileName, exportCertificatesPdf, verifyUrl } from '../lib/certificate';
 import type { Certificate, Student, TrainingSession } from '../lib/types';
 import { CertificateExportHost, CertificatePreview } from '../components/Certificate';
+import { BadgeShare } from '../components/Badge';
 import { CertificateFields, initialCertForm, resolveSignatureId, signatureDataUrl, type CertFormState } from '../components/CertificateFields';
 import { Button, Card, CertBadge, ErrorNote, Field, Input, PageHeader, Spinner, useToast } from '../components/ui';
 
@@ -32,6 +33,7 @@ export default function CertificateEditor() {
   const [studentName, setStudentName] = useState('');
   const [facilityName, setFacilityName] = useState('');
   const [existingSig, setExistingSig] = useState<string | null>(null);
+  const [studentEmail, setStudentEmail] = useState<string | null>(null);
   const [form, setForm] = useState<CertFormState>(() => initialCertForm(profile, settings));
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState<string | null>(null);
@@ -44,6 +46,8 @@ export default function CertificateEditor() {
           const c = must(await supabase.from('certificates').select('*').eq('id', id).single(), 'load certificate') as Certificate;
           setCert(c);
           setStudentId(c.student_id);
+          const { data: st } = await supabase.from('students').select('email').eq('id', c.student_id).maybeSingle();
+          setStudentEmail(st?.email ?? null);
           setFacilityId(c.facility_id);
           setStudentName(c.student_name);
           setFacilityName(c.facility_name);
@@ -55,6 +59,7 @@ export default function CertificateEditor() {
             expirationDate: c.expiration_date,
             expirationTouched: true,
             theme: c.theme,
+            layout: c.layout ?? 'classic',
             signerName: c.signer_name ?? '',
             signerTitle: c.signer_title,
             instructorCertNumber: c.instructor_cert_number ?? '',
@@ -109,6 +114,7 @@ export default function CertificateEditor() {
         certNumber: cert?.cert_number,
         verifyCode: cert?.verify_code,
         theme: form.theme,
+        layout: form.layout,
         settings,
       }),
     [studentName, facilityName, form, existingSig, cert, settings],
@@ -136,6 +142,7 @@ export default function CertificateEditor() {
         instructor_cert_number: form.instructorCertNumber.trim() || null,
         personnel: form.personnel.filter((p) => p.name.trim() || p.title.trim()),
         theme: form.theme,
+        layout: form.layout,
       };
       if (newSigId !== undefined) payload.signature_id = newSigId;
       if (cert) {
@@ -306,11 +313,41 @@ export default function CertificateEditor() {
             />
           </Card>
         </div>
-        <div className="xl:sticky xl:top-20 xl:self-start">
+        <div className="space-y-6 xl:sticky xl:top-20 xl:self-start">
           <Card title="Preview" subtitle="Landscape US Letter · prints in full color">
             <div className="rounded-lg bg-slate-100 p-3">
               <CertificatePreview data={data} />
             </div>
+          </Card>
+          <Card
+            title={
+              <span className="flex items-center gap-2">
+                <BadgeCheck className="h-4 w-4 text-teal-brand" /> Digital badge
+              </span>
+            }
+            subtitle={cert ? 'Share-ready badge linked to this certificate — for LinkedIn and social media' : 'Available once the certificate is issued'}
+          >
+            {cert ? (
+              <BadgeShare
+                compact
+                theme={form.theme}
+                layout={form.layout}
+                studentName={cert.student_name}
+                studentEmail={studentEmail}
+                disabled={cert.status === 'revoked'}
+                share={{
+                  code: cert.verify_code,
+                  certNumber: cert.cert_number,
+                  facilityName: cert.facility_name,
+                  programVerbal: cert.program_verbal,
+                  programPhysical: cert.program_physical,
+                  issueDate: cert.issue_date,
+                  expirationDate: cert.expiration_date,
+                }}
+              />
+            ) : (
+              <p className="text-sm text-slate-500">Issue the certificate to generate the student's digital badge and share links.</p>
+            )}
           </Card>
         </div>
       </div>

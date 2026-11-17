@@ -169,6 +169,7 @@ export default function ClassDetail() {
             certNumber: c.cert_number,
             verifyCode: c.verify_code,
             theme: c.theme,
+            layout: c.layout,
             settings,
           }),
         ),
@@ -522,6 +523,7 @@ function BulkIssueModal({
         instructor_cert_number: form.instructorCertNumber.trim() || null,
         personnel: form.personnel.filter((p) => p.name.trim() || p.title.trim()),
         theme: form.theme,
+        layout: form.layout,
       }));
       must(await supabase.from('certificates').insert(payload), 'bulk issue');
       toast('success', `Issued ${payload.length} certificate${payload.length === 1 ? '' : 's'}`);

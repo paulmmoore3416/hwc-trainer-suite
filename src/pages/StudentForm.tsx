@@ -107,6 +107,7 @@ export default function StudentFormPage() {
         certNumber: latestCert.cert_number,
         verifyCode: latestCert.verify_code,
         theme: latestCert.theme,
+        layout: latestCert.layout,
         settings,
       });
     }
@@ -124,6 +125,7 @@ export default function StudentFormPage() {
       instructorCertNumber: cert.instructorCertNumber,
       personnel: cert.personnel,
       theme: cert.theme,
+      layout: cert.layout,
       settings,
     });
   }, [isEdit, latestCert, latestSig, name, facilityName, syncCerts, cert, settings]);
@@ -174,6 +176,7 @@ export default function StudentFormPage() {
               instructor_cert_number: cert.instructorCertNumber.trim() || null,
               personnel: cert.personnel.filter((p) => p.name.trim() || p.title.trim()),
               theme: cert.theme,
+              layout: cert.layout,
             }),
             'issue certificate',
           );

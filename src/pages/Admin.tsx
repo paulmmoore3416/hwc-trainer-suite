@@ -5,8 +5,9 @@ import { supabase } from '../lib/supabase';
 import { useAuth } from '../lib/auth';
 import { errMessage, must } from '../lib/errors';
 import { useCertSettings, useLookups } from '../lib/queries';
-import { THEMES, buildCertificateData } from '../lib/certificate';
-import type { CertTheme, CertificateSettings, Facility, LookupCategory, LookupValue } from '../lib/types';
+import { LAYOUTS, buildCertificateData } from '../lib/certificate';
+import type { CertLayout, CertificateSettings, Facility, LookupCategory, LookupValue } from '../lib/types';
+import { ThemePicker } from '../components/CertificateFields';
 import { CertificatePreview } from '../components/Certificate';
 import { Badge, Button, Card, Check, ErrorNote, Field, Input, Modal, PageHeader, Select, Spinner, Tabs, useToast } from '../components/ui';
 
@@ -294,6 +295,8 @@ function CertSettings() {
     certNumber: 'HWC-AVBH-2026-001234',
     settings: s,
     theme: s.default_theme,
+    layout: s.default_layout,
+    verifyCode: '0123456789abcdef',
   });
 
   return (
@@ -312,9 +315,10 @@ function CertSettings() {
           <Field label="Footer text">
             <Input value={s.footer_text} onChange={(e) => setS({ ...s, footer_text: e.target.value })} maxLength={90} />
           </Field>
-          <Field label="Default colors">
-            <Select value={s.default_theme} onChange={(e) => setS({ ...s, default_theme: e.target.value as CertTheme })} options={(Object.keys(THEMES) as CertTheme[]).map((k) => ({ value: k, label: THEMES[k].label }))} />
+          <Field label="Default certificate type">
+            <Select value={s.default_layout ?? 'classic'} onChange={(e) => setS({ ...s, default_layout: e.target.value as CertLayout })} options={LAYOUTS.map((l) => ({ value: l.id, label: `${l.label} — ${l.description}` }))} />
           </Field>
+          <ThemePicker value={s.default_theme} onChange={(v) => setS({ ...s, default_theme: v })} />
           <Check label="Print a verification QR code on certificates" checked={s.show_qr} onChange={(v) => setS({ ...s, show_qr: v })} />
         </div>
       </Card>

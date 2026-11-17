@@ -1,9 +1,9 @@
 import { Plus, Trash2 } from 'lucide-react';
 import { addMonths, today } from '../lib/format';
-import { THEMES } from '../lib/certificate';
+import { LAYOUTS, THEMES, THEME_GROUPS } from '../lib/certificate';
 import { supabase } from '../lib/supabase';
 import { must } from '../lib/errors';
-import type { CertTheme, CertificateSettings, Personnel, Profile } from '../lib/types';
+import type { CertLayout, CertTheme, CertificateSettings, Personnel, Profile } from '../lib/types';
 import { SignatureField, type SignatureChoice } from './SignaturePad';
 import { Button, Check, Field, Input, cx } from './ui';
 
@@ -15,6 +15,7 @@ export interface CertFormState {
   expirationDate: string;
   expirationTouched: boolean;
   theme: CertTheme;
+  layout: CertLayout;
   signerName: string;
   signerTitle: string;
   instructorCertNumber: string;
@@ -33,6 +34,7 @@ export function initialCertForm(profile: Profile | null, settings: CertificateSe
     expirationDate: addMonths(issue, settings.expiration_months),
     expirationTouched: false,
     theme: settings.default_theme,
+    layout: settings.default_layout ?? 'classic',
     signerName: profile?.full_name ?? '',
     signerTitle: settings.signer_title,
     instructorCertNumber: profile?.hwc_cert_number ?? '',
@@ -98,34 +100,33 @@ export function CertificateFields({ value, onChange, settings, savedSignature, e
       </div>
 
       <div>
-        <div className="label">Certificate colors</div>
-        <div className="grid grid-cols-2 gap-2">
-          {(Object.keys(THEMES) as CertTheme[]).map((k) => (
+        <div className="label">Certificate type</div>
+        <div className="grid gap-2 sm:grid-cols-3">
+          {LAYOUTS.map((l) => (
             <button
               type="button"
-              key={k}
-              onClick={() => set('theme', k)}
+              key={l.id}
+              onClick={() => set('layout', l.id)}
               className={cx(
-                'flex items-center gap-2 rounded-lg border px-2.5 py-2 text-left text-xs font-medium transition',
-                value.theme === k ? 'border-brand-800 bg-brand-50 ring-1 ring-brand-800' : 'border-slate-200 hover:border-slate-300',
+                'rounded-lg border p-2 text-left transition',
+                value.layout === l.id ? 'border-brand-800 bg-brand-50 ring-1 ring-brand-800' : 'border-slate-200 hover:border-slate-300',
               )}
             >
-              <span className="flex overflow-hidden rounded">
-                <span className="h-5 w-3" style={{ background: THEMES[k].primary }} />
-                <span className="h-5 w-3" style={{ background: THEMES[k].secondary }} />
-                <span className="h-5 w-3" style={{ background: THEMES[k].accent }} />
-              </span>
-              {THEMES[k].label}
+              <LayoutThumb layout={l.id} theme={value.theme} />
+              <div className="mt-1.5 text-xs font-semibold text-slate-800">{l.label}</div>
+              <div className="text-[11px] leading-tight text-slate-500">{l.description}</div>
             </button>
           ))}
         </div>
       </div>
 
+      <ThemePicker value={value.theme} onChange={(v) => set('theme', v)} />
+
       <div>
         <div className="label">Digital signature</div>
         {existingSignatureUrl && value.signature.kind === 'none' && (
           <div className="mb-2 flex items-center gap-3 rounded-lg border border-slate-200 bg-slate-50 p-2 text-xs text-slate-600">
-            <img src={existingSignatureUrl} alt="Current signature" className="h-10 bg-white object-contain" /> Current signature is kept unless you choose a new one.
+            <img src={existingSignatureUrl} alt="Current signature" className="paper h-10 rounded bg-white object-contain px-1" /> Current signature is kept unless you choose a new one.
           </div>
         )}
         <SignatureField value={value.signature} onChange={(s) => set('signature', s)} saved={savedSignature} defaultTypedName={value.signerName} autoSelectSaved={!existingSignatureUrl} />
@@ -161,6 +162,98 @@ export function CertificateFields({ value, onChange, settings, savedSignature, e
             </Button>
           )}
         </div>
+      </div>
+    </div>
+  );
+}
+
+/** Tiny schematic of each layout, tinted with the chosen theme. */
+export function LayoutThumb({ layout, theme }: { layout: CertLayout; theme: string }) {
+  const t = THEMES[theme] ?? THEMES.navy;
+  return (
+    <svg viewBox="0 0 110 85" className="w-full rounded border border-slate-200" style={{ background: t.paper }} aria-hidden>
+      {layout === 'modern' ? (
+        <>
+          <rect width="30" height="85" fill={t.primary} />
+          <rect x="30" width="2" height="85" fill={t.secondary} />
+          <circle cx="15" cy="18" r="7" fill={t.accent} />
+          <rect x="40" y="14" width="40" height="5" fill={t.secondary} />
+          <rect x="40" y="22" width="52" height="7" fill={t.primary} />
+          <rect x="40" y="38" width="58" height="3" fill={t.accent} />
+          <rect x="40" y="48" width="18" height="5" rx="2.5" fill={t.secondary} />
+          <rect x="61" y="48" width="18" height="5" rx="2.5" fill={t.secondary} />
+          <rect x="40" y="68" width="22" height="1.5" fill={t.primary} />
+          <rect x="72" y="68" width="26" height="1.5" fill={t.primary} />
+        </>
+      ) : layout === 'heritage' ? (
+        <>
+          <rect x="3" y="3" width="104" height="79" fill="none" stroke={t.primary} strokeWidth="2.5" />
+          <rect x="7" y="7" width="96" height="71" fill="none" stroke={t.accent} strokeWidth="0.8" />
+          <path d="M10 18V10H18M100 18V10H92M10 67V75H18M100 67V75H92" fill="none" stroke={t.accent} strokeWidth="1.4" />
+          <rect x="35" y="14" width="40" height="3" fill={t.secondary} />
+          <rect x="25" y="20" width="60" height="6" fill={t.primary} />
+          <rect x="30" y="38" width="50" height="5" fill={t.ink} opacity="0.7" />
+          <circle cx="55" cy="64" r="7" fill={t.accent} />
+          <rect x="16" y="66" width="22" height="1.5" fill={t.primary} />
+          <rect x="72" y="66" width="22" height="1.5" fill={t.primary} />
+        </>
+      ) : (
+        <>
+          <polygon points="0,0 22,0 0,22" fill={t.primary} />
+          <polygon points="25,0 30,0 0,30 0,25" fill={t.secondary} />
+          <polygon points="110,85 95,85 110,70" fill={t.primary} />
+          <rect x="30" y="12" width="50" height="6" fill={t.primary} />
+          <rect x="33" y="22" width="44" height="5" fill={t.primary} />
+          <circle cx="94" cy="18" r="7" fill={t.accent} />
+          <rect x="30" y="38" width="50" height="5" fill={t.ink} opacity="0.7" />
+          <rect x="16" y="66" width="24" height="1.5" fill={t.primary} />
+          <rect x="70" y="66" width="24" height="1.5" fill={t.primary} />
+        </>
+      )}
+    </svg>
+  );
+}
+
+/** 27 colour & style themes, grouped. */
+export function ThemePicker({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+  const current = THEMES[value] ?? THEMES.navy;
+  return (
+    <div>
+      <div className="mb-1 flex flex-wrap items-baseline justify-between gap-2">
+        <span className="label mb-0">Colors & style (27)</span>
+        <span className="text-xs text-slate-500">
+          {current.label} · {current.pattern === 'none' ? 'plain paper' : `${current.pattern} texture`}
+        </span>
+      </div>
+      <div className="max-h-64 space-y-3 overflow-y-auto rounded-lg border border-slate-200 p-3">
+        {THEME_GROUPS.map((g) => (
+          <div key={g}>
+            <div className="mb-1.5 text-[11px] font-semibold tracking-wide text-slate-500 uppercase">{g}</div>
+            <div className="grid grid-cols-2 gap-1.5 sm:grid-cols-3">
+              {Object.entries(THEMES)
+                .filter(([, th]) => th.group === g)
+                .map(([k, th]) => (
+                  <button
+                    type="button"
+                    key={k}
+                    title={th.label}
+                    onClick={() => onChange(k)}
+                    className={cx(
+                      'flex items-center gap-2 rounded-md border px-2 py-1.5 text-left text-[11px] font-medium transition',
+                      value === k ? 'border-brand-800 bg-brand-50 ring-1 ring-brand-800' : 'border-slate-200 hover:border-slate-300',
+                    )}
+                  >
+                    <span className="flex shrink-0 overflow-hidden rounded ring-1 ring-black/10">
+                      <span className="h-5 w-2.5" style={{ background: th.primary }} />
+                      <span className="h-5 w-2.5" style={{ background: th.secondary }} />
+                      <span className="h-5 w-2.5" style={{ background: th.accent }} />
+                    </span>
+                    <span className="truncate text-slate-700">{th.label}</span>
+                  </button>
+                ))}
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );

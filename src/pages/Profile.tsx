@@ -139,7 +139,7 @@ export default function Profile() {
         <div className="space-y-6">
           <Card title={<span className="flex items-center gap-2"><PenLine className="h-4 w-4 text-slate-400" /> Saved digital signature</span>} subtitle="Draw or type once, then reuse it on every certificate.">
             {sigUrl && sig.kind === 'none' && (
-              <div className="mb-4 flex h-24 items-center justify-center rounded-lg border border-slate-200 bg-white">
+              <div className="paper mb-4 flex h-24 items-center justify-center rounded-lg border border-slate-200 bg-white">
                 <img src={sigUrl} alt="Your saved signature" className="max-h-20 object-contain" />
               </div>
             )}

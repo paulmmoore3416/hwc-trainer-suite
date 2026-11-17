@@ -14,8 +14,10 @@ import './index.css';
 import App from './App';
 import { supabase } from './lib/supabase';
 import { installGlobalErrorHandlers, logError } from './lib/errors';
+import { applyInitialColorMode, ColorModeProvider } from './lib/theme';
 
 installGlobalErrorHandlers();
+applyInitialColorMode();
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -40,9 +42,11 @@ async function boot() {
   }
   createRoot(document.getElementById('root')!).render(
     <StrictMode>
-      <QueryClientProvider client={queryClient}>
-        <App />
-      </QueryClientProvider>
+      <ColorModeProvider>
+        <QueryClientProvider client={queryClient}>
+          <App />
+        </QueryClientProvider>
+      </ColorModeProvider>
     </StrictMode>,
   );
 }

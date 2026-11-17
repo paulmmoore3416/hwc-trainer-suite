@@ -87,13 +87,13 @@ export function SignatureField({ value, onChange, saved, defaultTypedName = '', 
         {tab('type', 'Type', <Type className="h-3.5 w-3.5" />)}
       </div>
       {mode === 'saved' && saved && (
-        <div className="flex h-28 items-center justify-center rounded-lg border border-slate-200 bg-white">
+        <div className="paper flex h-28 items-center justify-center rounded-lg border border-slate-200 bg-white">
           <img src={saved.dataUrl} alt="Saved signature" className="max-h-20 max-w-[90%] object-contain" />
         </div>
       )}
       {mode === 'draw' && (
         <div>
-          <canvas ref={canvasRef} className="h-28 w-full touch-none rounded-lg border border-dashed border-slate-300 bg-white" aria-label="Signature drawing area" />
+          <canvas ref={canvasRef} className="paper h-28 w-full touch-none rounded-lg border border-dashed border-slate-300 bg-white" aria-label="Signature drawing area" />
           <div className="mt-1.5 flex items-center justify-between text-xs text-slate-500">
             <span>Sign with your mouse, finger or stylus.</span>
             <Button
@@ -113,7 +113,7 @@ export function SignatureField({ value, onChange, saved, defaultTypedName = '', 
       {mode === 'type' && (
         <div className="space-y-2">
           <Input value={typed} onChange={(e) => void applyTyped(e.target.value)} placeholder="Type your full name" />
-          <div className="flex h-20 items-center justify-center rounded-lg border border-slate-200 bg-white">
+          <div className="paper flex h-20 items-center justify-center rounded-lg border border-slate-200 bg-white">
             {value.kind === 'new' && value.source === 'typed' ? <img src={value.dataUrl} alt="Typed signature" className="max-h-16 object-contain" /> : <span className="text-xs text-slate-400">Preview</span>}
           </div>
         </div>

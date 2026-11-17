@@ -4,12 +4,16 @@
 
 # 🛡️ Handle With Care Trainer Suite
 
-**An invite-only training CRM for Handle With Care (HWC) instructors: student profiles, signed and colored completion certificates, class rosters, training-incident tracking, and deep compliance reporting.**
+**An invite-only training CRM for Handle With Care (HWC) instructors: student profiles, signed and colored completion certificates, shareable digital badges, class rosters, training-incident tracking, and deep compliance reporting. Light and dark mode.**
 
 [![Deploy to GitHub Pages](https://github.com/paulmmoore3416/hwc-trainer-suite/actions/workflows/deploy.yml/badge.svg)](https://github.com/paulmmoore3416/hwc-trainer-suite/actions/workflows/deploy.yml)
 [![Live Suite](https://img.shields.io/badge/live-GitHub%20Pages-1f8a8a?logo=githubpages&logoColor=white)](https://paulmmoore3416.github.io/hwc-trainer-suite/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-c29a2c.svg)](LICENSE)
-![Tests](https://img.shields.io/badge/tests-9%20passing-0ca30c?logo=vitest&logoColor=white)
+![Tests](https://img.shields.io/badge/tests-12%20passing-0ca30c?logo=vitest&logoColor=white)
+![Certificate types](https://img.shields.io/badge/certificate%20types-3-1f8a8a)
+![Themes](https://img.shields.io/badge/color%20%26%20style%20themes-27-c29a2c)
+![Digital badges](https://img.shields.io/badge/digital%20badges-LinkedIn%20ready-0a66c2?logo=linkedin&logoColor=white)
+![Dark mode](https://img.shields.io/badge/dark%20mode-light%20%7C%20dark%20%7C%20system-111a2e)
 ![RLS](https://img.shields.io/badge/Row%20Level%20Security-enforced-1f2a44?logo=postgresql&logoColor=white)
 
 ![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black)
@@ -39,7 +43,10 @@
 | 🧑‍🎓 | **Student profiles** | Staff records with facility, employee ID, student type, department, job title, status and full training history. |
 | 🪪 | **Live certificate preview** | As you type a new student's details, the colored certificate fills in instantly: name, facility, date, programs, signature and personnel. |
 | ✍️ | **Digital signatures** | Draw, type, or reuse your saved signature. An editable personnel block sits under the signature (instructor, cert #, co-instructors, coordinators). |
-| 🎨 | **Four original certificate themes** | Navy & Teal, Arch Vista Blue & Green, Crimson & Charcoal, Forest & Gold. PDF export and printing at print resolution. |
+| 🖼️ | **3 certificate types** | Classic Ribbon, Modern Panel and Heritage Formal. All are original layouts, exported to PDF or printed at print resolution. |
+| 🎨 | **27 color & style themes** | Five families (Signature, Classic, Jewel, Earth, Modern), each with its own paper texture (weave, linen, dots, grid, waves, diamond or plain). Every theme works with every certificate type. |
+| 🏅 | **Digital badges** | Each certificate gets a matching badge (rosette, hexagon or shield). The public credential page offers one-click **Add to LinkedIn profile** (pre-filled), LinkedIn, Facebook and X sharing, and a downloadable badge image. |
+| 🌗 | **Dark mode** | Light, dark or follow-the-system, remembered per device. Charts switch to a dark-tuned palette, while certificates and signatures stay on white paper. |
 | 🔎 | **QR verification** | Every certificate carries a QR code and number that anyone can verify on a public page showing valid / expired / revoked. |
 | 📅 | **Classes & rosters** | Schedule classes, enroll students, record attendance, verbal/physical competency and written scores, then **bulk-issue certificates**. |
 | 🩹 | **Training-incident tracking** | Injuries and near misses during training, with technique, body part, severity, contributing factors and corrective-action follow-up. |
@@ -51,6 +58,9 @@
 > **Training records only.** "Incidents" means accidents and near misses that happen *during HWC training*. Never enter patient names or protected health information.
 
 ## 📸 Screenshots
+
+<p align="center"><img src="docs/screenshots/certificate-types.jpg" alt="Three certificate types"/><br/><sub><b>3 certificate types</b>: Classic Ribbon · Modern Panel · Heritage Formal</sub></p>
+
 
 <table>
 <tr>
@@ -66,20 +76,55 @@
 </tr>
 </table>
 
-### 🎨 Certificate themes
+### 🌗 Dark mode
 
 <table>
 <tr>
-<td width="50%"><img src="docs/screenshots/certificate-navy.jpg" alt="Navy & Teal certificate"/><br/><sub>Navy & Teal (default)</sub></td>
-<td width="50%"><img src="docs/screenshots/certificate-archvista.jpg" alt="Arch Vista certificate"/><br/><sub>Arch Vista Blue & Green</sub></td>
+<td width="50%"><img src="docs/screenshots/dark-login.jpg" alt="Dark login"/><br/><sub>Login in dark mode</sub></td>
+<td width="50%"><img src="docs/screenshots/dark-dashboard.jpg" alt="Dark dashboard"/><br/><sub>Dashboard in dark mode</sub></td>
 </tr>
 <tr>
-<td width="50%"><img src="docs/screenshots/certificate-crimson.jpg" alt="Crimson certificate"/><br/><sub>Crimson & Charcoal</sub></td>
-<td width="50%"><img src="docs/screenshots/certificate-forest.jpg" alt="Forest certificate"/><br/><sub>Forest & Gold</sub></td>
+<td colspan="2"><img src="docs/screenshots/dark-certificate-badge.jpg" alt="Certificate editor with digital badge in dark mode"/><br/><sub>Certificate editor with type and theme pickers and the <b>digital badge</b> share panel</sub></td>
 </tr>
 </table>
 
-The certificate is an **original design** in the spirit of the HWC paper certificate: angled corner ribbons, a serif title, a script recipient name, program checkboxes, a seal, and date and signature lines. It does not reproduce HWC logo artwork. **Instructor certificates are intentionally not available in the suite.** Only student completion certificates can be generated.
+### 🏅 Digital badges
+
+<p align="center"><img src="docs/screenshots/badges.jpg" alt="Digital badges"/></p>
+
+<p align="center"><img src="docs/screenshots/badge-page.jpg" width="720" alt="Public credential page"/><br/><sub>Public credential page: verified status, credential details, <b>Add to LinkedIn profile</b>, social sharing and badge download</sub></p>
+
+```mermaid
+flowchart LR
+    A[Certificate issued] --> B[Digital badge generated<br/>shape = certificate type<br/>colors = theme]
+    B --> C["Badge link<br/>#/badge/&lt;code&gt;"]
+    C -->|Email to student / copy link| D[Student opens credential page]
+    D --> E[Add to LinkedIn profile<br/>pre-filled certification]
+    D --> F[Share on LinkedIn · Facebook · X]
+    D --> G[Download badge PNG]
+    E & F --> H[Viewers click through<br/>and see live verified status]
+```
+
+### 🎨 27 color & style themes
+
+<p align="center"><img src="docs/screenshots/themes-gallery.jpg" alt="All 27 themes"/></p>
+
+| Family | Themes |
+|---|---|
+| **Signature** | Navy & Teal · Arch Vista Blue & Green · Deep Teal & Amber |
+| **Classic** | Crimson & Charcoal · Burgundy & Rose Gold · Maroon & Gold · Harbor Gray & Signal Red · Classic Black & White |
+| **Jewel** | Royal Purple & Gold · Emerald & Onyx · Ruby & Black · Sapphire & Platinum · Indigo & Turquoise |
+| **Earth** | Forest & Gold · Slate & Copper · Plum & Sage · Olive & Brass · Mocha & Cream · Pine & Birch |
+| **Modern** | Midnight & Silver · Ocean & Coral · Sunset Plum & Orange · Sky & Sand · Charcoal & Lime · Cobalt & Tangerine · Lavender & Graphite · Steel Blue & Orange |
+
+<table>
+<tr>
+<td width="50%"><img src="docs/screenshots/certificate-navy.jpg" alt="Navy & Teal certificate"/><br/><sub>Classic Ribbon · Navy & Teal (default)</sub></td>
+<td width="50%"><img src="docs/screenshots/certificate-archvista.jpg" alt="Arch Vista certificate"/><br/><sub>Classic Ribbon · Arch Vista Blue & Green</sub></td>
+</tr>
+</table>
+
+All three certificate types are **original designs** in the spirit of the HWC paper certificate: angled corner ribbons, a serif title, a script recipient name, program checkboxes, a seal, and date and signature lines. It does not reproduce HWC logo artwork. **Instructor certificates are intentionally not available in the suite.** Only student completion certificates can be generated.
 
 ## 🏗️ Architecture
 
@@ -87,7 +132,8 @@ The certificate is an **original design** in the spirit of the HWC paper certifi
 flowchart LR
     subgraph Browser["🌐 GitHub Pages: static SPA"]
         UI["React 19 + TypeScript<br/>Tailwind · Recharts · TanStack Query"]
-        CERT["Certificate renderer<br/>SVG/HTML → PDF (jsPDF)"]
+        CERT["Certificate renderer<br/>3 types × 27 themes → PDF"]
+        BADGE["Digital badge<br/>PNG export · share links"]
     end
     subgraph Supabase["🟢 Supabase"]
         AUTH["Auth<br/>(password + one-time links)"]
@@ -102,6 +148,8 @@ flowchart LR
     EDGE --> PG
     AUTH -. "before-insert trigger:<br/>invite-only signup" .-> PG
     CERT --- UI
+    BADGE --- UI
+    LI["LinkedIn · Facebook · X"] -. "public #/badge link<br/>verify_certificate()" .-> RPC
 ```
 
 ```mermaid
@@ -150,7 +198,8 @@ erDiagram
         date issue_date
         date expiration_date "default +12 months"
         jsonb personnel "under-signature block"
-        text theme
+        text layout "classic | modern | heritage"
+        text theme "1 of 27"
     }
 ```
 
@@ -200,19 +249,19 @@ Every chart has a **table view** and **CSV export**. All aggregation runs in Pos
 
 ```mermaid
 pie showData title Lines of code by area
-    "Pages (17 screens)" : 5241
-    "Components" : 1286
-    "Lib (auth, certificates, data)" : 816
-    "SQL migrations" : 1087
+    "Pages (19 screens)" : 5485
+    "Components" : 1944
+    "Lib (auth, theme, certificates, data)" : 1010
+    "SQL migrations" : 1120
     "Edge Function" : 166
-    "Tests" : 71
+    "Tests" : 113
 ```
 
 ```
 hwc-trainer-suite/
 ├── src/
 │   ├── pages/            Dashboard, Students, StudentForm, Classes, Certificates, Incidents, Reports, Team, Admin, Logs …
-│   ├── components/       Certificate renderer, SignaturePad, CertificateFields, charts, UI kit, Layout
+│   ├── components/       Certificate (3 types), Badge & share panel, SignaturePad, theme pickers, charts, ThemeToggle, UI kit
 │   └── lib/              Supabase client, auth context, certificate builder, error logging, formatting, CSV
 ├── supabase/
 │   ├── migrations/       Schema · RLS & security · reporting · seed · views

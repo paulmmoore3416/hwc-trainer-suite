@@ -42,6 +42,9 @@ If a link expires, use **Resend link** on their row.
 2. **Classes → Schedule class** → add students → record attendance and results → **Save roster** → **Issue certificates to passed students** → **Download all certificates (PDF)**.
 3. **Training Incidents → Log incident** for any injury or near miss during training. Track the corrective action until it's closed.
 4. **Reports & Metrics**: choose a date range and facility (top bar) and export CSV or print.
+5. **Digital badges**: open any certificate. The *Digital badge* card has **Email to student** (sends the student their badge link), **Copy badge link** and **Download badge (PNG)**. From their credential page the student can click **Add to LinkedIn profile** (LinkedIn's *Add licence or certification* form opens pre-filled), share on LinkedIn, Facebook or X, or download the badge image.
+6. **Certificate look**: pick a **certificate type** (Classic Ribbon, Modern Panel, Heritage Formal) and one of **27 color & style themes** on any certificate. Set the suite-wide defaults under *Administration → Certificate settings*.
+7. **Dark mode**: use the Light / Dark / System switch in the top bar or on the login page. The choice is remembered on that device.
 
 ## 4. Administration (super admin)
 - **Facilities**: add sites. The short code appears in certificate numbers (e.g. `HWC-AVBH-2026-001001`).

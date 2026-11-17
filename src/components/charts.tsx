@@ -4,13 +4,28 @@ import { Download, Table2 } from 'lucide-react';
 import { downloadCsv } from '../lib/csv';
 import { fmtNum } from '../lib/format';
 import { cx } from './ui';
+import { useColorMode } from '../lib/theme';
 
 /** Validated categorical palette (fixed order — never cycled) and reserved status colours. */
 export const SERIES = ['#2a78d6', '#eb6834', '#1baf7a', '#eda100', '#e87ba4', '#008300', '#6250d6', '#e34948'];
+/** Same eight hues stepped for the dark surface (validated reference palette). */
+export const SERIES_DARK = ['#3987e5', '#d95926', '#199e70', '#c98500', '#d55181', '#0ca30c', '#9085e9', '#e66767'];
+const toDark = (c: string) => {
+  const i = SERIES.indexOf(c);
+  return i >= 0 ? SERIES_DARK[i] : c;
+};
+function useChartColors() {
+  const { isDark } = useColorMode();
+  return {
+    axis: { fontSize: 11, fill: isDark ? '#a8b0bd' : '#52514e' },
+    grid: isDark ? '#243049' : '#e8e8e4',
+    legend: isDark ? '#a8b0bd' : '#52514e',
+    color: (c: string) => (isDark ? toDark(c) : c),
+    surface: isDark ? '#111a2e' : '#ffffff',
+  };
+}
 export const STATUS = { good: '#0ca30c', warning: '#fab219', serious: '#ec835a', critical: '#d03b3b', neutral: '#a3a8b3' };
 
-const AXIS = { fontSize: 11, fill: '#52514e' };
-const GRID = '#e8e8e4';
 
 export interface SeriesDef {
   key: string;
@@ -117,6 +132,7 @@ export function ChartCard({
 }
 
 export function TrendLines({ data, x, series, xFormatter }: { data: object[]; x: string; series: SeriesDef[]; xFormatter?: (v: string) => string }) {
+  const { axis: AXIS, grid: GRID, legend, color, surface } = useChartColors();
   return (
     <ResponsiveContainer width="100%" height="100%">
       <LineChart data={data} margin={{ top: 8, right: 16, left: -8, bottom: 0 }}>
@@ -124,9 +140,9 @@ export function TrendLines({ data, x, series, xFormatter }: { data: object[]; x:
         <XAxis dataKey={x} tick={AXIS} tickLine={false} axisLine={{ stroke: GRID }} tickFormatter={xFormatter} minTickGap={12} />
         <YAxis tick={AXIS} tickLine={false} axisLine={false} allowDecimals={false} width={44} />
         <Tooltip content={<TooltipBox labelFormatter={xFormatter} />} cursor={{ stroke: '#94a3b8', strokeDasharray: '3 3' }} />
-        {series.length > 1 && <Legend iconType="circle" iconSize={8} wrapperStyle={{ fontSize: 12, color: '#52514e' }} />}
+        {series.length > 1 && <Legend iconType="circle" iconSize={8} wrapperStyle={{ fontSize: 12, color: legend }} />}
         {series.map((s, i) => (
-          <Line key={s.key} type="monotone" dataKey={s.key} name={s.label} stroke={s.color ?? SERIES[i]} strokeWidth={2} dot={{ r: 3, strokeWidth: 0, fill: s.color ?? SERIES[i] }} activeDot={{ r: 5, stroke: '#fff', strokeWidth: 2 }} isAnimationActive={false} />
+          <Line key={s.key} type="monotone" dataKey={s.key} name={s.label} stroke={color(s.color ?? SERIES[i])} strokeWidth={2} dot={{ r: 3, strokeWidth: 0, fill: color(s.color ?? SERIES[i]) }} activeDot={{ r: 5, stroke: surface, strokeWidth: 2 }} isAnimationActive={false} />
         ))}
       </LineChart>
     </ResponsiveContainer>
@@ -149,6 +165,7 @@ export function Bars({
   xFormatter?: (v: string) => string;
 }) {
   const radius: [number, number, number, number] = horizontal ? [0, 4, 4, 0] : [4, 4, 0, 0];
+  const { axis: AXIS, grid: GRID, legend, color, surface } = useChartColors();
   return (
     <ResponsiveContainer width="100%" height="100%">
       <BarChart data={data} layout={horizontal ? 'vertical' : 'horizontal'} margin={{ top: 8, right: 16, left: horizontal ? 8 : -8, bottom: 0 }} barGap={2} barCategoryGap="22%">
@@ -165,16 +182,16 @@ export function Bars({
           </>
         )}
         <Tooltip content={<TooltipBox labelFormatter={xFormatter} />} cursor={{ fill: 'rgba(148,163,184,0.12)' }} />
-        {series.length > 1 && <Legend iconType="circle" iconSize={8} wrapperStyle={{ fontSize: 12, color: '#52514e' }} />}
+        {series.length > 1 && <Legend iconType="circle" iconSize={8} wrapperStyle={{ fontSize: 12, color: legend }} />}
         {series.map((s, i) => (
           <Bar
             key={s.key}
             dataKey={s.key}
             name={s.label}
-            fill={s.color ?? SERIES[i]}
+            fill={color(s.color ?? SERIES[i])}
             stackId={stacked ? 'a' : undefined}
             radius={stacked ? (i === series.length - 1 ? radius : [0, 0, 0, 0]) : radius}
-            stroke="#ffffff"
+            stroke={surface}
             strokeWidth={stacked ? 1 : 0}
             maxBarSize={36}
             isAnimationActive={false}

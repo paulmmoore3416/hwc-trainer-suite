@@ -4,6 +4,7 @@ import { CheckCircle2, ShieldX, XCircle } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { fmtDate } from '../lib/format';
 import { Spinner } from '../components/ui';
+import { Link } from 'react-router-dom';
 
 interface Result {
   cert_number: string;
@@ -66,6 +67,11 @@ export default function Verify() {
                 <dt className="text-slate-500">Certificate #</dt>
                 <dd className="col-span-2 font-mono text-slate-900">{r.cert_number}</dd>
               </dl>
+            )}
+            {r && r.status !== 'revoked' && (
+              <Link to={`/badge/${code}`} className="mt-6 block rounded-lg bg-brand-800 px-4 py-2.5 text-center text-sm font-semibold text-white hover:bg-brand-700">
+                View digital badge & share
+              </Link>
             )}
           </>
         )}
