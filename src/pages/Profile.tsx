@@ -112,7 +112,7 @@ export default function Profile() {
         }
       />
       <div className="grid gap-6 lg:grid-cols-2">
-        <Card title="Instructor details" subtitle="These auto-fill the personnel block on certificates you issue.">
+        <Card title="Instructor details" subtitle="These auto-fill the instructor name on certificates you issue.">
           <form onSubmit={saveProfile} className="grid gap-4 sm:grid-cols-2">
             <Field label="Full name" className="sm:col-span-2" required>
               <Input value={f.full_name} onChange={(e) => setF({ ...f, full_name: e.target.value })} required maxLength={120} />

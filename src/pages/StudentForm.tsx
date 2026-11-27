@@ -7,7 +7,7 @@ import { useAuth } from '../lib/auth';
 import { errMessage, must } from '../lib/errors';
 import { useCertSettings, useLookup, useSignature } from '../lib/queries';
 import { studentFullName } from '../lib/format';
-import { buildCertificateData } from '../lib/certificate';
+import { CERT_LAYOUT, CERT_THEME, buildCertificateData } from '../lib/certificate';
 import type { Certificate, Student } from '../lib/types';
 import { CertificatePreview } from '../components/Certificate';
 import { CertificateFields, initialCertForm, resolveSignatureId, signatureDataUrl, type CertFormState } from '../components/CertificateFields';
@@ -106,8 +106,6 @@ export default function StudentFormPage() {
         personnel: latestCert.personnel,
         certNumber: latestCert.cert_number,
         verifyCode: latestCert.verify_code,
-        theme: latestCert.theme,
-        layout: latestCert.layout,
         settings,
       });
     }
@@ -124,8 +122,6 @@ export default function StudentFormPage() {
       signerTitle: cert.signerTitle,
       instructorCertNumber: cert.instructorCertNumber,
       personnel: cert.personnel,
-      theme: cert.theme,
-      layout: cert.layout,
       settings,
     });
   }, [isEdit, latestCert, latestSig, name, facilityName, syncCerts, cert, settings]);
@@ -175,8 +171,8 @@ export default function StudentFormPage() {
               signer_title: cert.signerTitle.trim() || settings.signer_title,
               instructor_cert_number: cert.instructorCertNumber.trim() || null,
               personnel: cert.personnel.filter((p) => p.name.trim() || p.title.trim()),
-              theme: cert.theme,
-              layout: cert.layout,
+              theme: CERT_THEME,
+              layout: CERT_LAYOUT,
             }),
             'issue certificate',
           );

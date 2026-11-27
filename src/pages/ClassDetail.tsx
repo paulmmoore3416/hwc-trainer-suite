@@ -7,7 +7,7 @@ import { useAuth } from '../lib/auth';
 import { errMessage, must } from '../lib/errors';
 import { displayName, useCertSettings, useInstructors, useSignature } from '../lib/queries';
 import { addMonths, fmtDate, safeSearch, studentFullName, titleCase } from '../lib/format';
-import { buildCertificateData, exportCertificatesPdf, type CertificateData } from '../lib/certificate';
+import { CERT_LAYOUT, CERT_THEME, buildCertificateData, exportCertificatesPdf, type CertificateData } from '../lib/certificate';
 import type { Certificate, Enrollment, Student, TrainingSession } from '../lib/types';
 import { Certificate as CertificateView } from '../components/Certificate';
 import { CertificateFields, initialCertForm, resolveSignatureId, type CertFormState } from '../components/CertificateFields';
@@ -168,8 +168,6 @@ export default function ClassDetail() {
             personnel: c.personnel,
             certNumber: c.cert_number,
             verifyCode: c.verify_code,
-            theme: c.theme,
-            layout: c.layout,
             settings,
           }),
         ),
@@ -522,8 +520,8 @@ function BulkIssueModal({
         signer_title: form.signerTitle.trim() || settings.signer_title,
         instructor_cert_number: form.instructorCertNumber.trim() || null,
         personnel: form.personnel.filter((p) => p.name.trim() || p.title.trim()),
-        theme: form.theme,
-        layout: form.layout,
+        theme: CERT_THEME,
+        layout: CERT_LAYOUT,
       }));
       must(await supabase.from('certificates').insert(payload), 'bulk issue');
       toast('success', `Issued ${payload.length} certificate${payload.length === 1 ? '' : 's'}`);

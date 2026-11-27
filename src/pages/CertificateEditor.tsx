@@ -7,7 +7,7 @@ import { useAuth } from '../lib/auth';
 import { errMessage, must } from '../lib/errors';
 import { useCertSettings, useSignature } from '../lib/queries';
 import { certStatus, fmtDateTime, studentFullName } from '../lib/format';
-import { buildCertificateData, certFileName, exportCertificatesPdf, verifyUrl } from '../lib/certificate';
+import { CERT_LAYOUT, CERT_THEME, buildCertificateData, certFileName, exportCertificatesPdf, verifyUrl } from '../lib/certificate';
 import type { Certificate, Student, TrainingSession } from '../lib/types';
 import { CertificateExportHost, CertificatePreview } from '../components/Certificate';
 import { BadgeShare } from '../components/Badge';
@@ -58,8 +58,6 @@ export default function CertificateEditor() {
             issueDate: c.issue_date,
             expirationDate: c.expiration_date,
             expirationTouched: true,
-            theme: c.theme,
-            layout: c.layout ?? 'classic',
             signerName: c.signer_name ?? '',
             signerTitle: c.signer_title,
             instructorCertNumber: c.instructor_cert_number ?? '',
@@ -113,8 +111,6 @@ export default function CertificateEditor() {
         personnel: form.personnel,
         certNumber: cert?.cert_number,
         verifyCode: cert?.verify_code,
-        theme: form.theme,
-        layout: form.layout,
         settings,
       }),
     [studentName, facilityName, form, existingSig, cert, settings],
@@ -141,8 +137,8 @@ export default function CertificateEditor() {
         signer_title: form.signerTitle.trim() || settings.signer_title,
         instructor_cert_number: form.instructorCertNumber.trim() || null,
         personnel: form.personnel.filter((p) => p.name.trim() || p.title.trim()),
-        theme: form.theme,
-        layout: form.layout,
+        theme: CERT_THEME,
+        layout: CERT_LAYOUT,
       };
       if (newSigId !== undefined) payload.signature_id = newSigId;
       if (cert) {
@@ -330,8 +326,6 @@ export default function CertificateEditor() {
             {cert ? (
               <BadgeShare
                 compact
-                theme={form.theme}
-                layout={form.layout}
                 studentName={cert.student_name}
                 studentEmail={studentEmail}
                 disabled={cert.status === 'revoked'}
