@@ -54,7 +54,11 @@ export interface Personnel {
   title: string;
 }
 
-/** Theme id from the THEMES catalogue in lib/certificate.ts (27 colour & style options). */
+/**
+ * Legacy design columns. The suite now has a single certificate design, so new rows are always
+ * written with CERT_THEME / CERT_LAYOUT from lib/certificate.ts; older rows may hold other values,
+ * which are ignored when rendering.
+ */
 export type CertTheme = string;
 export type CertLayout = 'classic' | 'modern' | 'heritage';
 
@@ -178,8 +182,6 @@ export interface LookupValue {
 
 export interface CertificateSettings {
   expiration_months: number;
-  default_theme: CertTheme;
-  default_layout: CertLayout;
   program_label: string;
   signer_title: string;
   footer_text: string;

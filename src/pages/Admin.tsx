@@ -5,11 +5,10 @@ import { supabase } from '../lib/supabase';
 import { useAuth } from '../lib/auth';
 import { errMessage, must } from '../lib/errors';
 import { useCertSettings, useLookups } from '../lib/queries';
-import { LAYOUTS, buildCertificateData } from '../lib/certificate';
-import type { CertLayout, CertificateSettings, Facility, LookupCategory, LookupValue } from '../lib/types';
-import { ThemePicker } from '../components/CertificateFields';
+import { BADGE_PNG_PATH, FILLABLE_CERT_PATH, buildCertificateData } from '../lib/certificate';
+import type { CertificateSettings, Facility, LookupCategory, LookupValue } from '../lib/types';
 import { CertificatePreview } from '../components/Certificate';
-import { Badge, Button, Card, Check, ErrorNote, Field, Input, Modal, PageHeader, Select, Spinner, Tabs, useToast } from '../components/ui';
+import { Badge, Button, Card, Check, ErrorNote, Field, Input, Modal, PageHeader, Spinner, Tabs, useToast } from '../components/ui';
 
 const CATEGORIES: { id: LookupCategory; label: string; help: string }[] = [
   { id: 'student_type', label: 'Student types', help: 'Used for reporting by staff category.' },
@@ -290,12 +289,8 @@ function CertSettings() {
     studentName: 'Jordan A. Example',
     facilityName: 'Arch Vista Behavioral Health',
     signerName: 'Instructor Name',
-    instructorCertNumber: '12345',
-    personnel: [{ name: 'Training Coordinator', title: 'Staff Development' }],
     certNumber: 'HWC-AVBH-2026-001234',
     settings: s,
-    theme: s.default_theme,
-    layout: s.default_layout,
     verifyCode: '0123456789abcdef',
   });
 
@@ -306,23 +301,23 @@ function CertSettings() {
           <Field label="Certification valid for (months)" hint="HWC certifications expire one year from the training date by default.">
             <Input type="number" min={1} max={60} value={s.expiration_months} onChange={(e) => setS({ ...s, expiration_months: Number(e.target.value) })} />
           </Field>
-          <Field label="Program title">
-            <Input value={s.program_label} onChange={(e) => setS({ ...s, program_label: e.target.value })} />
-          </Field>
-          <Field label="Signature line title">
+          <Field label="Title under instructor name">
             <Input value={s.signer_title} onChange={(e) => setS({ ...s, signer_title: e.target.value })} />
           </Field>
-          <Field label="Footer text">
-            <Input value={s.footer_text} onChange={(e) => setS({ ...s, footer_text: e.target.value })} maxLength={90} />
-          </Field>
-          <Field label="Default certificate type">
-            <Select value={s.default_layout ?? 'classic'} onChange={(e) => setS({ ...s, default_layout: e.target.value as CertLayout })} options={LAYOUTS.map((l) => ({ value: l.id, label: `${l.label} — ${l.description}` }))} />
-          </Field>
-          <ThemePicker value={s.default_theme} onChange={(v) => setS({ ...s, default_theme: v })} />
-          <Check label="Print a verification QR code on certificates" checked={s.show_qr} onChange={(v) => setS({ ...s, show_qr: v })} />
+          <Check label="Print the www.handlewithcare.com QR code on certificates" checked={s.show_qr} onChange={(v) => setS({ ...s, show_qr: v })} />
+          <div className="rounded-lg border border-slate-200 bg-slate-50 p-3 text-xs text-slate-600">
+            The suite issues one certificate design (HWC Basic Training) and one badge. Blank copies for hand-issued certificates:{' '}
+            <a className="font-semibold text-brand-600 hover:underline" href={FILLABLE_CERT_PATH} download>
+              fillable certificate (PDF)
+            </a>{' '}
+            ·{' '}
+            <a className="font-semibold text-brand-600 hover:underline" href={BADGE_PNG_PATH} download>
+              badge (PNG)
+            </a>
+          </div>
         </div>
       </Card>
-      <Card title="Sample">
+      <Card title="Certificate (the only design)">
         <div className="rounded-lg bg-slate-100 p-3">
           <CertificatePreview data={sample} />
         </div>

@@ -3,8 +3,8 @@ import { Link, useParams } from 'react-router-dom';
 import { CheckCircle2, ShieldX, XCircle } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { fmtDate } from '../lib/format';
-import { programText } from '../lib/certificate';
-import type { CertLayout } from '../lib/types';
+import logoUrl from '../assets/hwc-logo.png?inline';
+import { BRAND, programText } from '../lib/certificate';
 import { BadgeShare } from '../components/Badge';
 import { Spinner } from '../components/ui';
 import { ThemeToggle } from '../components/ThemeToggle';
@@ -18,8 +18,6 @@ interface Credential {
   program_label: string;
   issue_date: string;
   expiration_date: string;
-  theme: string;
-  layout: CertLayout;
   status: 'valid' | 'expired' | 'revoked';
 }
 
@@ -53,9 +51,16 @@ export default function BadgePage() {
         <ThemeToggle />
       </div>
       <div className="mx-auto mt-2 max-w-4xl overflow-hidden rounded-3xl bg-white shadow-2xl ring-1 ring-slate-200">
-        <div className="no-invert bg-gradient-to-r from-brand-900 via-brand-800 to-[#16465a] px-8 py-6 text-white">
-          <div className="font-serif text-3xl font-semibold italic">Handle With Care</div>
-          <div className="text-xs tracking-[0.3em] text-teal-200 uppercase">Digital Credential</div>
+        <div className="no-invert flex items-center gap-4 border-b-4 px-8 py-6 text-white" style={{ background: BRAND.navy, borderColor: BRAND.red }}>
+          <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-white p-2">
+            <img src={logoUrl} alt="" className="h-full w-full object-contain" />
+          </span>
+          <div>
+            <div className="text-2xl font-extrabold tracking-wide" style={{ fontFamily: 'Montserrat, Inter, sans-serif' }}>
+              HANDLE WITH CARE
+            </div>
+            <div className="text-xs tracking-[0.3em] text-white/70 uppercase">Basic Training · Digital Credential</div>
+          </div>
         </div>
         {state.loading ? (
           <Spinner label="Loading credential…" />
@@ -100,8 +105,6 @@ export default function BadgePage() {
             </div>
             <div className="rounded-2xl bg-slate-50 p-6 ring-1 ring-slate-200">
               <BadgeShare
-                theme={c.theme}
-                layout={c.layout}
                 studentName={c.student_name}
                 disabled={c.status === 'revoked'}
                 share={{

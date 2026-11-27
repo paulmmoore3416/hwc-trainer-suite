@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { buildCertificateData, certFileName, DEFAULT_CERT_SETTINGS, LAYOUTS, shareLinks, THEMES, THEME_GROUPS } from '../src/lib/certificate';
+import { buildCertificateData, CERT_FOOTER, CERT_LAYOUT, CERT_THEME, certFileName, completionText, DEFAULT_CERT_SETTINGS, HWC_SITE_URL, shareLinks } from '../src/lib/certificate';
 import { addMonths, certStatus, safeSearch, studentFullName } from '../src/lib/format';
 import { toCsv } from '../src/lib/csv';
 
@@ -11,13 +11,10 @@ describe('buildCertificateData', () => {
     expect(d.signerTitle).toBe(DEFAULT_CERT_SETTINGS.signer_title);
     expect(d.expirationDate).toBe('2027-11-17');
     expect(d.programVerbal && d.programPhysical).toBe(true);
-    expect(d.theme).toBe('navy');
-    expect(d.layout).toBe('classic');
   });
 
-  it('falls back to the default theme for unknown theme ids', () => {
-    expect(buildCertificateData({ studentName: 'A', theme: 'not-a-theme' }).theme).toBe('navy');
-    expect(buildCertificateData({ studentName: 'A', theme: 'royal', layout: 'heritage' })).toMatchObject({ theme: 'royal', layout: 'heritage' });
+  it('always prints the fixed HWC footer, even if an old custom footer is saved', () => {
+    expect(buildCertificateData({ studentName: 'A', settings: { footer_text: 'Old footer' } }).footerText).toBe(CERT_FOOTER);
   });
 
   it('respects custom expiration months and explicit expiration', () => {
@@ -76,15 +73,18 @@ describe('csv', () => {
   });
 });
 
-describe('certificate catalogue', () => {
-  it('offers 3 certificate types and 27 colour & style themes', () => {
-    expect(LAYOUTS.map((l) => l.id)).toEqual(['classic', 'modern', 'heritage']);
-    expect(Object.keys(THEMES)).toHaveLength(27);
-    for (const [id, t] of Object.entries(THEMES)) {
-      expect(id).toMatch(/^[a-z0-9_-]{2,30}$/); // matches the DB check constraint
-      expect(THEME_GROUPS).toContain(t.group);
-      for (const c of [t.primary, t.secondary, t.accent, t.paper, t.ink]) expect(c).toMatch(/^#[0-9a-f]{6}$/);
-    }
+describe('single certificate design', () => {
+  it('writes values that satisfy the existing DB check constraints', () => {
+    expect(CERT_THEME).toMatch(/^[a-z0-9_-]{2,30}$/);
+    expect(['classic', 'modern', 'heritage']).toContain(CERT_LAYOUT);
+  });
+  it('points the QR code at the HWC website', () => {
+    expect(HWC_SITE_URL).toBe('https://www.handlewithcare.com');
+  });
+  it('words the completion sentence by program', () => {
+    expect(completionText(true, true)).toContain('verbal de\u2011escalation, and safe physical intervention');
+    expect(completionText(true, false)).toContain('crisis prevention and verbal de\u2011escalation,');
+    expect(completionText(false, true)).toContain('crisis prevention and safe physical intervention,');
   });
 });
 

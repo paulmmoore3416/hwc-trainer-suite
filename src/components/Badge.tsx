@@ -1,148 +1,80 @@
 import { forwardRef, useId, useRef, useState } from 'react';
 import { Copy, Download, Mail, Share2 } from 'lucide-react';
-import { downloadBadgePng, shareLinks, themeOf, type ShareInput, type ThemeSpec } from '../lib/certificate';
-import type { CertLayout } from '../lib/types';
+import logoUrl from '../assets/hwc-logo.png?inline';
+import { BRAND, downloadBadgePng, shareLinks, type ShareInput } from '../lib/certificate';
 import { errMessage } from '../lib/errors';
 import { Button, useToast } from './ui';
-import { starPoints } from './Certificate';
 
-const SERIF = '"Cormorant Garamond", Georgia, serif';
-const SANS = 'Inter, system-ui, sans-serif';
+const HEAD = 'Montserrat, Inter, system-ui, sans-serif';
 
 export interface BadgeProps {
-  theme: string;
-  layout: CertLayout;
-  verbal: boolean;
-  physical: boolean;
-  year: string;
   size?: number;
 }
 
-function ShieldCheck({ t, y, s = 1, fill }: { t: ThemeSpec; y: number; s?: number; fill?: string }) {
-  return (
-    <g transform={`translate(0 ${y}) scale(${s})`}>
-      <path d="M0 -30 L24 -21 L24 -1 C24 16 12 25 0 30 C-12 25 -24 16 -24 -1 L-24 -21 Z" fill={fill ?? t.primary} />
-      <path d="M-11 0 L-3 8 L12 -9" fill="none" stroke="#ffffff" strokeWidth="4.5" strokeLinecap="round" strokeLinejoin="round" />
-    </g>
-  );
-}
-
-function programLine(v: boolean, p: boolean) {
-  return v && p ? 'VERBAL • PHYSICAL' : v ? 'VERBAL PROGRAM' : p ? 'PHYSICAL PROGRAM' : 'PROGRAM';
-}
-
-function hex(r: number) {
-  return Array.from({ length: 6 }, (_, i) => {
-    const a = (Math.PI / 3) * i - Math.PI / 2;
-    return `${(r * Math.cos(a)).toFixed(1)},${(r * Math.sin(a)).toFixed(1)}`;
+/** Five-point star centred on (x, y). */
+function star(x: number, y: number, r: number): string {
+  return Array.from({ length: 10 }, (_, k) => {
+    const rad = k % 2 === 0 ? r : r * 0.42;
+    const a = -Math.PI / 2 + (k * Math.PI) / 5;
+    return `${(x + rad * Math.cos(a)).toFixed(2)},${(y + rad * Math.sin(a)).toFixed(2)}`;
   }).join(' ');
 }
 
-/** Digital badge artwork (square). Shape follows the certificate layout; colours follow its theme. */
-export const Badge = forwardRef<HTMLDivElement, BadgeProps>(function Badge({ theme, layout, verbal, physical, year, size = 300 }, ref) {
-  const t = themeOf(theme);
-  const uid = useId().replace(/:/g, '');
-  const ringId = `ring-${uid}`;
-  const prog = programLine(verbal, physical);
+/** Ribbon tail (folded end) for side = -1 (left) or 1 (right). */
+function tail(side: -1 | 1): string {
+  const xin = side * 205;
+  const xout = side * 261;
+  return `${xin},114 ${xout},114 ${xout - side * 16},90 ${xout},66 ${xin},66`;
+}
 
-  let art: React.ReactNode;
-  if (layout === 'modern') {
-    art = (
-      <>
-        <polygon points={hex(282)} fill={t.primary} />
-        <polygon points={hex(262)} fill="none" stroke={t.accent} strokeWidth="5" />
-        <polygon points={hex(244)} fill={t.paper} />
-        <ShieldCheck t={t} y={-150} s={1.35} />
-        <text y={-82} textAnchor="middle" fill={t.primary} style={{ fontFamily: SANS, fontWeight: 700, fontSize: 30, letterSpacing: 6 }}>
-          HANDLE WITH CARE
-        </text>
-        <polygon points="-300,-42 300,-42 276,0 300,42 -300,42 -276,0" fill={t.secondary} />
-        <polygon points="-300,-42 -255,-42 -255,42 -300,42 -276,0" fill={t.primary} opacity="0.35" />
-        <polygon points="300,-42 255,-42 255,42 300,42 276,0" fill={t.primary} opacity="0.35" />
-        <text y={17} textAnchor="middle" fill="#ffffff" style={{ fontFamily: SANS, fontWeight: 800, fontSize: 52, letterSpacing: 9 }}>
-          CERTIFIED
-        </text>
-        <text y={90} textAnchor="middle" fill={t.ink} style={{ fontFamily: SANS, fontWeight: 600, fontSize: 22, letterSpacing: 4 }}>
-          {prog}
-        </text>
-        <rect x={-46} y={112} width={92} height={3} fill={t.accent} />
-        <text y={170} textAnchor="middle" fill={t.primary} style={{ fontFamily: SERIF, fontWeight: 700, fontSize: 46 }}>
-          {year}
-        </text>
-      </>
-    );
-  } else if (layout === 'heritage') {
-    const shield = 'M0 -278 L232 -196 L232 18 C232 172 116 250 0 284 C-116 250 -232 172 -232 18 L-232 -196 Z';
-    art = (
-      <>
-        <path d={shield} fill={t.primary} />
-        <path d={shield} transform="scale(0.9)" fill="none" stroke={t.accent} strokeWidth="5" />
-        <path d={shield} transform="scale(0.82)" fill={t.paper} />
-        {[-1, 1].map((d) => (
-          <g key={d} transform={`scale(${d} 1)`}>
-            {Array.from({ length: 7 }, (_, i) => {
-              const deg = i * 14;
-              const a = deg * (Math.PI / 180);
-              const x = 118 * Math.cos(a);
-              const y = 128 + 82 * Math.sin(a);
-              return <ellipse key={i} cx={x} cy={y} rx="15" ry="6.5" transform={`rotate(${deg - 70} ${x} ${y})`} fill={t.accent} opacity="0.9" />;
-            })}
-          </g>
-        ))}
-        <text y={-150} textAnchor="middle" fill={t.secondary} style={{ fontFamily: SERIF, fontWeight: 700, fontSize: 28, letterSpacing: 5 }}>
-          HANDLE WITH CARE
-        </text>
-        <text y={-112} textAnchor="middle" fill={t.accent} style={{ fontSize: 22 }}>
-          ✦ ✦ ✦
-        </text>
-        <polygon points="-280,-48 280,-48 252,-4 280,40 -280,40 -252,-4" fill={t.secondary} />
-        <text y={10} textAnchor="middle" fill="#ffffff" style={{ fontFamily: SERIF, fontWeight: 700, fontSize: 56, letterSpacing: 8 }}>
-          CERTIFIED
-        </text>
-        <text y={82} textAnchor="middle" fill={t.ink} style={{ fontFamily: SERIF, fontWeight: 700, fontSize: 24, letterSpacing: 4 }}>
-          {prog}
-        </text>
-        <text y={150} textAnchor="middle" fill={t.primary} style={{ fontFamily: SERIF, fontWeight: 700, fontSize: 46 }}>
-          {year}
-        </text>
-      </>
-    );
-  } else {
-    art = (
-      <>
-        <polygon points="-120,170 -190,292 -140,272 -112,300 -60,190" fill={t.secondary} />
-        <polygon points="120,170 190,292 140,272 112,300 60,190" fill={t.primary} />
-        <polygon points={starPoints(0, -20, 262, 240, 40)} fill={t.accent} />
-        <circle cy={-20} r="226" fill={t.primary} />
-        <circle cy={-20} r="212" fill="none" stroke={t.accent} strokeWidth="3" />
+/**
+ * The one and only digital badge: Handle With Care Basic Training — COMPLETED.
+ * Identical to public/downloads/HWC_Basic_Training_Badge.png (navy ring, arc lettering,
+ * HWC logo medallion, red ribbon). Drawn on a 600×600 viewBox centred at 0,0.
+ */
+export const Badge = forwardRef<HTMLDivElement, BadgeProps>(function Badge({ size = 300 }, ref) {
+  const uid = useId().replace(/:/g, '');
+  const top = `top-${uid}`;
+  const bottom = `bot-${uid}`;
+  return (
+    <div ref={ref} style={{ width: size, height: size, display: 'inline-block' }} className="hwc-badge no-invert">
+      <svg width={size} height={size} viewBox="-300 -300 600 600" role="img" aria-label="Handle With Care Basic Training completed badge">
         <defs>
-          <path id={ringId} d="M -176 -20 A 176 176 0 1 1 176 -20 A 176 176 0 1 1 -176 -20" />
+          {/* top arc runs clockwise over the top; bottom arc runs left→right under the bottom so letters stay upright */}
+          <path id={top} d="M -228 0 A 228 228 0 0 1 228 0" />
+          <path id={bottom} d="M -252 0 A 252 252 0 0 0 252 0" />
         </defs>
-        <text fill="#ffffff" style={{ fontFamily: SANS, fontWeight: 700, fontSize: 24 }}>
-          <textPath href={`#${ringId}`} startOffset="0" textLength={1080} lengthAdjust="spacing">
-            HANDLE WITH CARE • BEHAVIOR MANAGEMENT SYSTEM • CERTIFIED •
+        <circle r={285} fill={BRAND.navy} />
+        <circle r={272} fill="none" stroke="#ffffff" strokeOpacity={0.35} strokeWidth={1.5} />
+        <text fill="#ffffff" style={{ fontFamily: HEAD, fontWeight: 800, fontSize: 34, letterSpacing: 3.5 }}>
+          <textPath href={`#${top}`} startOffset="50%" textAnchor="middle">
+            HANDLE WITH CARE
           </textPath>
         </text>
-        <circle cy={-20} r="145" fill={t.paper} />
-        <circle cy={-20} r="136" fill="none" stroke={t.accent} strokeWidth="1.5" strokeDasharray="3 4" />
-        <ShieldCheck t={t} y={-92} s={1.15} />
-        <text y={-12} textAnchor="middle" fill={t.primary} style={{ fontFamily: SANS, fontWeight: 800, fontSize: 40, letterSpacing: 4 }}>
-          CERTIFIED
+        <text fill="#ffffff" style={{ fontFamily: HEAD, fontWeight: 700, fontSize: 28, letterSpacing: 4 }}>
+          <textPath href={`#${bottom}`} startOffset="50%" textAnchor="middle">
+            BASIC TRAINING
+          </textPath>
         </text>
-        <text y={24} textAnchor="middle" fill={t.secondary} style={{ fontFamily: SANS, fontWeight: 600, fontSize: 17, letterSpacing: 3 }}>
-          {prog}
-        </text>
-        <text y={68} textAnchor="middle" fill={t.ink} style={{ fontFamily: SERIF, fontWeight: 700, fontSize: 34 }}>
-          {year}
-        </text>
-      </>
-    );
-  }
+        <circle cx={-240} r={7} fill={BRAND.red} />
+        <circle cx={240} r={7} fill={BRAND.red} />
 
-  return (
-    <div ref={ref} style={{ width: size, height: size, display: 'inline-block' }} className="hwc-badge">
-      <svg width={size} height={size} viewBox="-300 -300 600 600" role="img" aria-label={`Handle With Care certified badge ${year}`}>
-        {art}
+        <circle r={196} fill="#ffffff" />
+        <circle r={190} fill="none" stroke={BRAND.red} strokeWidth={6} />
+        <image href={logoUrl} x={-75} y={-48 - 75} width={150} height={150} preserveAspectRatio="xMidYMid meet" />
+
+        <polygon points={tail(-1)} fill={BRAND.redDark} />
+        <polygon points={tail(1)} fill={BRAND.redDark} />
+        <rect x={-215} y={52} width={430} height={56} fill={BRAND.red} />
+        <text y={91} textAnchor="middle" fill="#ffffff" style={{ fontFamily: HEAD, fontWeight: 800, fontSize: 31, letterSpacing: 6 }}>
+          COMPLETED
+        </text>
+
+        <g fill={BRAND.navy}>
+          <polygon points={star(-34, 152, 8)} />
+          <polygon points={star(0, 152, 11)} />
+          <polygon points={star(34, 152, 8)} />
+        </g>
       </svg>
     </div>
   );
@@ -151,16 +83,12 @@ export const Badge = forwardRef<HTMLDivElement, BadgeProps>(function Badge({ the
 /** Badge preview + LinkedIn / social share actions. Used on the certificate page and the public badge page. */
 export function BadgeShare({
   share,
-  theme,
-  layout,
   studentName,
   studentEmail,
   disabled,
   compact,
 }: {
   share: ShareInput;
-  theme: string;
-  layout: CertLayout;
   studentName: string;
   studentEmail?: string | null;
   disabled?: boolean;
@@ -193,7 +121,7 @@ export function BadgeShare({
   return (
     <div className={compact ? 'grid gap-5 sm:grid-cols-[180px_1fr] sm:items-center' : 'space-y-5'}>
       <div className="flex justify-center">
-        <Badge theme={theme} layout={layout} verbal={share.programVerbal} physical={share.programPhysical} year={year} size={compact ? 180 : 260} />
+        <Badge size={compact ? 180 : 260} />
       </div>
       <div className="space-y-3">
         <a href={disabled ? undefined : links.linkedinAdd} target="_blank" rel="noopener noreferrer" aria-disabled={disabled}>
@@ -240,7 +168,7 @@ export function BadgeShare({
       </div>
       {/* Full-resolution copy for PNG export */}
       <div aria-hidden style={{ position: 'fixed', left: -12000, top: 0 }}>
-        <Badge ref={exportRef} theme={theme} layout={layout} verbal={share.programVerbal} physical={share.programPhysical} year={year} size={600} />
+        <Badge ref={exportRef} size={600} />
       </div>
     </div>
   );
